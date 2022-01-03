@@ -1,3 +1,4 @@
+# ORIGINALLY DEVELOPED BY ZEROSUM0X0 (https://twitter.com/zerosum0x0)
 ![Koadic](https://i.imgur.com/RAlWfbD.png)
 # Koadic
 Koadic, or COM Command & Control, is a Windows post-exploitation rootkit similar to other penetration testing tools such as Meterpreter and Powershell Empire. The major difference is that Koadic does most of its operations using Windows Script Host (a.k.a. JScript/VBScript), with compatibility in the core to support a default installation of Windows 2000 with no service packs (and potentially even versions of NT4) all the way through Windows 10.

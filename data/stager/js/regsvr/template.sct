@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<scriptlet>
+    <registration progid="~PROGID~" classid="{f7c3e81c-75ad-4835-ba37-a91821fbef29}">
+        <script language="JScript">
+            <![CDATA[
+                ~SCRIPT~
+            ]]>
+        </script>
+    </registration>
+</scriptlet>

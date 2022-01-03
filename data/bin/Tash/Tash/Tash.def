@@ -1,0 +1,10 @@
+; Tash.def : Declares the module parameters.
+
+LIBRARY      "Tash.DLL"
+
+EXPORTS
+	DllCanUnloadNow		PRIVATE
+	DllGetClassObject	PRIVATE
+	DllRegisterServer	PRIVATE
+	DllUnregisterServer	PRIVATE
+	DllInstall		PRIVATE

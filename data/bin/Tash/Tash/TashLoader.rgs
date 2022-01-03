@@ -1,0 +1,26 @@
+HKCR
+{
+	Tash.TashLoader.1 = s 'TashLoader Class'
+	{
+		CLSID = s '{6AA5DEAB-5B77-4D09-BD8D-8EE26F2964AA}'
+	}
+	Tash.TashLoader = s 'TashLoader Class'
+	{
+		CLSID = s '{6AA5DEAB-5B77-4D09-BD8D-8EE26F2964AA}'
+		CurVer = s 'Tash.TashLoader.1'
+	}
+	NoRemove CLSID
+	{
+		ForceRemove {6AA5DEAB-5B77-4D09-BD8D-8EE26F2964AA} = s 'TashLoader Class'
+		{
+			ProgID = s 'Tash.TashLoader.1'
+			VersionIndependentProgID = s 'Tash.TashLoader'
+			ForceRemove 'Programmable'
+			InprocServer32 = s '%MODULE%'
+			{
+				val ThreadingModel = s 'Both'
+			}
+			'TypeLib' = s '{830CFF36-9188-45DF-9EF3-D14C1D12A3A4}'
+		}
+	}
+}

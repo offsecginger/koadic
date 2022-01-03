@@ -1,0 +1,29 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Tash", "Tash\Tash.vcproj", "{684DCC5A-1FA6-41D7-A779-2D96BDAF478A}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TashClient", "TashClient\TashClient.vcproj", "{7507CE64-210F-424F-94CC-63A2FE4AD27E}"
+	ProjectSection(ProjectDependencies) = postProject
+		{684DCC5A-1FA6-41D7-A779-2D96BDAF478A} = {684DCC5A-1FA6-41D7-A779-2D96BDAF478A}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{684DCC5A-1FA6-41D7-A779-2D96BDAF478A}.Debug|Win32.ActiveCfg = Debug|Win32
+		{684DCC5A-1FA6-41D7-A779-2D96BDAF478A}.Debug|Win32.Build.0 = Debug|Win32
+		{684DCC5A-1FA6-41D7-A779-2D96BDAF478A}.Release|Win32.ActiveCfg = Release|Win32
+		{684DCC5A-1FA6-41D7-A779-2D96BDAF478A}.Release|Win32.Build.0 = Release|Win32
+		{7507CE64-210F-424F-94CC-63A2FE4AD27E}.Debug|Win32.ActiveCfg = Debug|Win32
+		{7507CE64-210F-424F-94CC-63A2FE4AD27E}.Debug|Win32.Build.0 = Debug|Win32
+		{7507CE64-210F-424F-94CC-63A2FE4AD27E}.Release|Win32.ActiveCfg = Release|Win32
+		{7507CE64-210F-424F-94CC-63A2FE4AD27E}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

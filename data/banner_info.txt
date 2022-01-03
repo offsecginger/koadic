@@ -1,0 +1,9 @@
+
+%s-{ \033[34;1mKoadic C3 - COM Command & Control\033[0m }-
+%s\033[32;1mWindows Post-Exploitation Tools\033[0m
+%s\033[3mEndless Intellect\033[0m
+
+%s~[ \033[1mVersion:\033[0m  %%%s ]~
+%s~[ \033[1mStagers:\033[0m    %%%s ]~
+%s~[ \033[1mImplants:\033[0m  %%%s ]~
+

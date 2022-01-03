@@ -1,0 +1,37 @@
+// Tash.idl : IDL source for Tash
+//
+
+// This file will be processed by the MIDL tool to
+// produce the type library (Tash.tlb) and marshalling code.
+
+import "oaidl.idl";
+import "ocidl.idl";
+
+[
+	object,
+	uuid(5FF70415-14AE-403D-AADD-A797348C8967),
+	dual,
+	nonextensible,
+	helpstring("ITashLoader Interface"),
+	pointer_default(unique)
+]
+interface ITashLoader : IDispatch{
+	[id(1), helpstring("method Load")] HRESULT Load([in] BSTR sCode, [in] BSTR sParam, [in] ULONG dwOffset, [out,retval] ULONG* dwErr);
+};
+[
+	uuid(830CFF36-9188-45DF-9EF3-D14C1D12A3A4),
+	version(1.0),
+	helpstring("Tash 1.0 Type Library")
+]
+library TashLib
+{
+	importlib("stdole2.tlb");
+	[
+		uuid(6AA5DEAB-5B77-4D09-BD8D-8EE26F2964AA),
+		helpstring("TashLoader Class")
+	]
+	coclass TashLoader
+	{
+		[default] interface ITashLoader;
+	};
+};
